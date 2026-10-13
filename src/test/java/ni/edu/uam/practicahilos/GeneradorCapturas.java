@@ -46,20 +46,24 @@ public class GeneradorCapturas extends Application {
             lblPorcentaje.setText("46%");
             btnIniciar.setDisable(true);
             btnDetener.setDisable(false);
+            btnDetener.setText("⏸ Pausar");
             btnReiniciar.setDisable(true);
 
             Platform.runLater(() -> {
                 saveNode(scene.getRoot(), new File(outDir, "02_practica_guiada_progreso.png"));
 
-                // Captura 3: Detención controlada
-                lblEstado.setText("Proceso detenido (interrupt)");
+                // Captura 3: Proceso Pausado / Reanudable (el botón se convierte en "▶ Reanudar")
+                lblEstado.setText("Proceso pausado (46% completado)");
                 barraProgreso.setProgress(0.46);
                 lblPorcentaje.setText("46%");
-                btnIniciar.setDisable(false);
-                btnDetener.setDisable(true);
+                btnIniciar.setDisable(true);
+                btnDetener.setDisable(false);
+                btnDetener.setText("▶ Reanudar");
                 btnReiniciar.setDisable(false);
 
                 Platform.runLater(() -> {
+                    saveNode(scene.getRoot(), new File(outDir, "03_practica_guiada_pausado_reanudable.png"));
+                    // Mantener compatibilidad con nombre previo
                     saveNode(scene.getRoot(), new File(outDir, "03_practica_guiada_detenido.png"));
 
                     // Captura 4: Proceso completado al 100%
@@ -68,6 +72,7 @@ public class GeneradorCapturas extends Application {
                     lblPorcentaje.setText("100%");
                     btnIniciar.setDisable(false);
                     btnDetener.setDisable(true);
+                    btnDetener.setText("⏸ Pausar");
                     btnReiniciar.setDisable(false);
 
                     Platform.runLater(() -> {
@@ -100,15 +105,17 @@ public class GeneradorCapturas extends Application {
                             lblDetalleClientes.setText("68 / 100 procesados");
                             btnIniciarClientes.setDisable(true);
                             btnDetenerClientes.setDisable(false);
+                            btnDetenerClientes.setText("⏸ Pausar Clientes");
 
-                            lblEstadoProductos.setText("Procesando productos...");
+                            lblEstadoProductos.setText("Pausado en 22/50");
                             barraProgresoProductos.setProgress(0.44);
                             lblPorcentajeProductos.setText("44%");
                             lblDetalleProductos.setText("22 / 50 procesados");
                             btnIniciarProductos.setDisable(true);
                             btnDetenerProductos.setDisable(false);
+                            btnDetenerProductos.setText("▶ Reanudar Productos");
 
-                            lblResumen.setText("Ejecutando concurrentemente: Clientes y Productos");
+                            lblResumen.setText("▶ Ejecutando Clientes | ⏸ Productos pausado");
 
                             Platform.runLater(() -> {
                                 saveNode(scene.getRoot(), new File(outDir, "05_reto_final_concurrente.png"));
@@ -120,6 +127,7 @@ public class GeneradorCapturas extends Application {
                                 lblDetalleClientes.setText("100 / 100 procesados");
                                 btnIniciarClientes.setDisable(false);
                                 btnDetenerClientes.setDisable(true);
+                                btnDetenerClientes.setText("⏸ Pausar Clientes");
 
                                 lblEstadoProductos.setText("Productos completados");
                                 barraProgresoProductos.setProgress(1.0);
@@ -127,6 +135,7 @@ public class GeneradorCapturas extends Application {
                                 lblDetalleProductos.setText("50 / 50 procesados");
                                 btnIniciarProductos.setDisable(false);
                                 btnDetenerProductos.setDisable(true);
+                                btnDetenerProductos.setText("⏸ Pausar Productos");
 
                                 lblResumen.setText("Todos los procesos han finalizado con éxito");
 

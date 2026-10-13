@@ -18,7 +18,7 @@
 
 La empresa **NicaData Solutions S.A.** requiere un sistema de procesamiento de datos por lotes para simular la importación y validación de registros de clientes y productos. Debido al volumen de información, el procesamiento tarda varios segundos. Si la tarea se ejecuta en el hilo principal de la aplicación, la interfaz de usuario se congela por completo, impidiendo cualquier interacción o visualización del progreso.
 
-Para solucionar este problema, se desarrolló una aplicación en **JavaFX 21** aplicando programación concurrente con la API estándar de hilos de Java (`Thread`, `Runnable`), coordinando las actualizaciones visuales mediante `Platform.runLater()` y garantizando un diseño limpio **sin uso de hojas de estilo CSS externas**.
+Para solucionar este problema, se desarrolló una aplicación en **JavaFX 21** aplicando programación concurrente con la API estándar de hilos de Java (`Thread`, `Runnable`), coordinando las actualizaciones visuales mediante `Platform.runLater()`, incorporando un mecanismo dinámico de **Pausa y Reanudación de progreso acumulado**, y garantizando un diseño limpio y vistoso **sin uso de hojas de estilo CSS externas**.
 
 ---
 
@@ -50,6 +50,7 @@ PracticaHilos/
 │   └── img/                                          # Capturas de pantalla y evidencias
 │       ├── 01_practica_guiada_inicio.png
 │       ├── 02_practica_guiada_progreso.png
+│       ├── 03_practica_guiada_pausado_reanudable.png
 │       ├── 03_practica_guiada_detenido.png
 │       ├── 04_practica_guiada_finalizado.png
 │       ├── 05_reto_final_concurrente.png
@@ -60,10 +61,10 @@ PracticaHilos/
     │   │   ├── module-info.java                      # Descriptor modular JPMS
     │   │   └── ni/edu/uam/practicahilos/
     │   │       ├── MainApp.java                      # Clase principal y configuración de Stage
-    │   │       └── ProcesadorController.java         # Controlador y gestión concurrente de hilos
+    │   │       └── ProcesadorController.java         # Controlador y gestión concurrente con pausa/reanudación
     │   └── resources/
     │       └── ni/edu/uam/practicahilos/
-    │           └── procesador-view.fxml              # Interfaz gráfica FXML nativa (sin CSS)
+    │           └── procesador-view.fxml              # Interfaz gráfica FXML nativa vistosa (sin CSS)
     └── test/
         └── java/
             └── ni/edu/uam/practicahilos/
@@ -72,31 +73,29 @@ PracticaHilos/
 
 ---
 
-## 5. Explicación de los Hilos Implementados
+## 5. Explicación de los Hilos y Mecanismo de Pausa/Reanudación
 
-### 5.1 Hilo de la Práctica Guiada (`hiloProceso`)
-* **Propósito:** Procesar 100 registros en segundo plano.
-* **Ciclo de vida:**
-  1. **Inicio:** Se valida `hiloProceso.isAlive()` para evitar ejecuciones concurrentes duplicadas. Se restablecen las variables visuales y se deshabilitan los botones correspondientes.
-  2. **Ejecución:** Cada iteración duerme 100 ms (`Thread.sleep(100)`). En cada ciclo se verifica `Thread.currentThread().isInterrupted()`.
-  3. **Sincronización:** Cada avance se envía al JavaFX Application Thread mediante `Platform.runLater(() -> barraProgreso.setProgress(avance / 100.0))`.
-  4. **Detención controlada:** El método `detenerProceso()` invoca `hiloProceso.interrupt()`. Al capturar `InterruptedException`, el hilo restaura su estado de interrupción y actualiza el estado a *"Proceso detenido"*.
-  5. **Cierre seguro:** Mediante `stage.setOnCloseRequest`, si el hilo sigue vivo al cerrar la ventana, se solicita su interrupción inmediata para evitar fugas de memoria o procesos huérfanos.
+### 5.1 Hilo de la Práctica Guiada con Botón Conmutable (Pausar / Reanudar)
+* **Propósito:** Procesar 100 registros en segundo plano con posibilidad de pausar y continuar desde el punto detenido.
+* **Ciclo de vida y máquina de estados:**
+  1. **Inicio:** Al presionar `▶ Iniciar`, el hilo comienza desde el progreso acumulado (`progresoActual + 1`). El botón de detención se habilita mostrando `⏸ Pausar`.
+  2. **Ejecución:** Cada iteración avanza un registro durmiendo 100 ms (`Thread.sleep(100)`). El progreso se despacha a la barra y porcentaje mediante `Platform.runLater()`.
+  3. **Pausa dinámica (Conversión en Reanudar):** Al presionar `⏸ Pausar`, se envía `hiloProceso.interrupt()`. Al capturar `InterruptedException`, el hilo se detiene de forma limpia, preserva el valor de `progresoActual`, y el botón **se transforma automáticamente en `▶ Reanudar`**.
+  4. **Reanudación:** Al presionar `▶ Reanudar`, se instancia un nuevo hilo secundario que retoma el ciclo a partir de `progresoActual + 1` hasta `100`, sin reiniciar la barra a cero y cambiando nuevamente el botón a `⏸ Pausar`.
+  5. **Reinicio completo:** El botón `↺ Reiniciar` restablece `progresoActual = 0`, la barra a `0%`, el estado a *"Esperando inicio"* y restaura los botones.
+  6. **Cierre seguro:** Si la ventana se cierra con un hilo en ejecución, `stage.setOnCloseRequest` asegura la interrupción inmediata para evitar procesos huérfanos.
 
 ### 5.2 Hilos Concurrentes del Reto Final (`hiloClientes` y `hiloProductos`)
 * **`hiloClientes`:**
-  * Procesa **100 registros**.
-  * Latencia de simulación: **80 ms** por registro (~8 segundos en total).
-  * Barra de progreso y contadores individuales independientes.
+  * Procesa **100 registros** a **80 ms** por registro (~8 segundos en total).
+  * Soporta pausa y reanudación individual con el botón conmutable `⏸ Pausar Clientes` / `▶ Reanudar Clientes`.
 * **`hiloProductos`:**
-  * Procesa **50 registros**.
-  * Latencia de simulación: **150 ms** por registro (~7.5 segundos en total, avanzando a saltos porcentuales del 2%).
-  * Barra de progreso y contadores individuales independientes.
-* **Concurrencia real:**
-  Ambos hilos se ejecutan simultáneamente en núcleos del CPU independientes sin interferir entre sí ni degradar la fluidez de la ventana gráfica. Pueden ser iniciados, detenidos y reiniciados tanto individualmente como de manera sincronizada mediante los botones maestros:
-  * `btnIniciarAmbos`
-  * `btnDetenerAmbos`
-  * `btnReiniciarAmbos`
+  * Procesa **50 registros** a **150 ms** por registro (~7.5 segundos en total, avanzando a saltos porcentuales del 2%).
+  * Soporta pausa y reanudación individual con el botón conmutable `⏸ Pausar Productos` / `▶ Reanudar Productos`.
+* **Panel de Control Maestro Simultáneo:**
+  * `▶ Iniciar / Reanudar Ambos`: Inicia o reanuda ambos procesos simultáneamente.
+  * `⏸ Pausar Ambos`: Pausa concurrentemente ambos hilos.
+  * `↺ Reiniciar Ambos`: Restablece contadores y barras a cero.
 
 ---
 
@@ -134,12 +133,14 @@ Cuando se invoca una operación costosa o un bloqueo como `Thread.sleep(5000)` d
 
 ---
 
-## 7. Diseño de Interfaz (Cumplimiento de Restricción Sin CSS)
+## 7. Diseño de Interfaz (Vistoso y Sin CSS)
 
-En cumplimiento estricto del requerimiento **"no uses css"**:
-* No se incluyeron archivos `.css` (`styles.css` u homólogos).
-* No se utilizaron atributos `styleClass` ni reglas `@stylesheets` en los archivos FXML.
-* Todo el diseño se estructuró mediante contenedores de diseño nativos de JavaFX (`TabPane`, `Tab`, `ScrollPane`, `VBox`, `HBox`, `Separator`) con tipografías y espaciados propios del motor gráfico (`<Font size="..."/>`, `spacing="10"`, `alignment="CENTER"`, `padding`), aprovechando el tema estándar **Modena** de JavaFX.
+En cumplimiento estricto del requerimiento **"no uses css"**, pero garantizando una presentación **atractiva y vistosa**:
+* No se incluyeron archivos `.css` ni atributos de estilo CSS en FXML.
+* Se estructuró la interfaz utilizando tarjetas agrupadas con componentes nativos `TitledPane` (`collapsible="false"`), proporcionando marcos visuales bien definidos con barras de título.
+* Se incorporaron iconos y emojis universales (`▶`, `⏸`, `↺`, `⚠️`, `👥`, `📦`, `🚀`, `⚡`) que facilitan la comprensión visual de las acciones de inicio, pausa, reanudación y reinicio.
+* Se jerarquizó la tipografía mediante etiquetas nativas `<Font name="System Bold" size="24.0"/>` para porcentajes destacados y tamaños estandarizados en botones (`prefWidth="130"`, `prefHeight="34"`).
+* Se ampliaron las barras de progreso a `prefHeight="26.0"` y `prefWidth="500.0"`, permitiendo una visualización nítida y agradable.
 
 ---
 
@@ -153,8 +154,9 @@ En cumplimiento estricto del requerimiento **"no uses css"**:
 #### En Ejecución (Segundo Plano Activo y Ventana Receptiva)
 ![Práctica Guiada - En Progreso](docs/img/02_practica_guiada_progreso.png)
 
-#### Detención Controlada con `interrupt()`
-![Práctica Guiada - Detenido](docs/img/03_practica_guiada_detenido.png)
+#### Proceso Pausado (El botón se convierte en `▶ Reanudar`)
+*Al pausar el proceso, el hilo secundario se detiene cooperativamente, se conserva el 46% acumulado y el botón cambia automáticamente a `▶ Reanudar` para continuar sin perder el progreso.*
+![Práctica Guiada - Pausado y Reanudable](docs/img/03_practica_guiada_pausado_reanudable.png)
 
 #### Proceso Completado al 100%
 ![Práctica Guiada - Finalizado](docs/img/04_practica_guiada_finalizado.png)
@@ -163,8 +165,8 @@ En cumplimiento estricto del requerimiento **"no uses css"**:
 
 ### 8.2 Reto Final: Monitor Concurrente Empresarial
 
-#### Procesamiento Concurrente Simultáneo (Clientes y Productos)
-*Se aprecian ambas barras de progreso independientes avanzando a velocidades distintas (Clientes a 80 ms/reg y Productos a 150 ms/reg) con contadores individuales en tiempo real.*
+#### Procesamiento Concurrente Simultáneo (Clientes y Productos) con Pausa Independiente
+*Se aprecia a Clientes en ejecución activa al 68% mientras Productos se encuentra pausado en 22/50 con su botón transformado en `▶ Reanudar Productos`.*
 ![Reto Final - Concurrente](docs/img/05_reto_final_concurrente.png)
 
 #### Ambos Procesos Completados al 100%
