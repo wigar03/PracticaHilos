@@ -8,6 +8,7 @@ import javafx.scene.control.ProgressBar;
 
 public class ProcesadorController {
 
+    // --- Componentes Práctica Guiada (Paso 1 - 6) ---
     @FXML
     private Label lblEstado;
 
@@ -30,6 +31,68 @@ public class ProcesadorController {
     private Button btnBloqueante;
 
     private Thread hiloProceso;
+
+    // --- Componentes Reto Final (Clientes y Productos) ---
+    @FXML
+    private Label lblEstadoClientes;
+
+    @FXML
+    private Label lblPorcentajeClientes;
+
+    @FXML
+    private Label lblDetalleClientes;
+
+    @FXML
+    private ProgressBar barraProgresoClientes;
+
+    @FXML
+    private Button btnIniciarClientes;
+
+    @FXML
+    private Button btnDetenerClientes;
+
+    @FXML
+    private Button btnReiniciarClientes;
+
+    @FXML
+    private Label lblEstadoProductos;
+
+    @FXML
+    private Label lblPorcentajeProductos;
+
+    @FXML
+    private Label lblDetalleProductos;
+
+    @FXML
+    private ProgressBar barraProgresoProductos;
+
+    @FXML
+    private Button btnIniciarProductos;
+
+    @FXML
+    private Button btnDetenerProductos;
+
+    @FXML
+    private Button btnReiniciarProductos;
+
+    @FXML
+    private Button btnIniciarAmbos;
+
+    @FXML
+    private Button btnDetenerAmbos;
+
+    @FXML
+    private Button btnReiniciarAmbos;
+
+    @FXML
+    private Label lblResumenGeneral;
+
+    private Thread hiloClientes;
+    private Thread hiloProductos;
+
+    // ==========================================
+    // MÉTODOS DE LA PRÁCTICA GUIADA
+    // ==========================================
 
     @FXML
     private void iniciarProceso() {
@@ -117,6 +180,55 @@ public class ProcesadorController {
         btnIniciar.setDisable(false);
         btnDetener.setDisable(true);
         btnReiniciar.setDisable(false);
+    }
+
+    // ==========================================
+    // STUBS RETO FINAL (Implementación en Commit 8)
+    // ==========================================
+
+    @FXML
+    private void iniciarProcesoClientes() {
+        // Implementación en Commit 8
+    }
+
+    @FXML
+    private void detenerProcesoClientes() {
+        // Implementación en Commit 8
+    }
+
+    @FXML
+    private void reiniciarProcesoClientes() {
+        // Implementación en Commit 8
+    }
+
+    @FXML
+    private void iniciarProcesoProductos() {
+        // Implementación en Commit 8
+    }
+
+    @FXML
+    private void detenerProcesoProductos() {
+        // Implementación en Commit 8
+    }
+
+    @FXML
+    private void reiniciarProcesoProductos() {
+        // Implementación en Commit 8
+    }
+
+    @FXML
+    private void iniciarAmbosProcesos() {
+        // Implementación en Commit 8
+    }
+
+    @FXML
+    private void detenerAmbosProcesos() {
+        // Implementación en Commit 8
+    }
+
+    @FXML
+    private void reiniciarAmbosProcesos() {
+        // Implementación en Commit 8
     }
 
     public void detenerAlCerrar() {
