@@ -80,12 +80,23 @@ public class ProcesadorController {
 
     @FXML
     private void detenerProceso() {
-        // En Commit 5 se vincula la detención controlada con interrupt()
+        if (hiloProceso != null && hiloProceso.isAlive()) {
+            btnDetener.setDisable(true);
+            lblEstado.setText("Solicitando detención...");
+            hiloProceso.interrupt();
+        }
     }
 
     @FXML
     private void reiniciarProceso() {
-        // En Commit 5 se vincula la lógica de reinicio completo
+        if (hiloProceso != null && hiloProceso.isAlive()) {
+            return;
+        }
+
+        barraProgreso.setProgress(0);
+        lblPorcentaje.setText("0%");
+        lblEstado.setText("Esperando inicio");
+        habilitarBotones();
     }
 
     private void habilitarBotones() {
