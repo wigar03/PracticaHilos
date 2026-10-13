@@ -1,5 +1,6 @@
 package ni.edu.uam.practicahilos;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,22 +26,77 @@ public class ProcesadorController {
     @FXML
     private Button btnReiniciar;
 
+    private Thread hiloProceso;
+
     @FXML
     private void iniciarProceso() {
-        // Implementación de hilo en Commit 4
+        if (hiloProceso != null && hiloProceso.isAlive()) {
+            return;
+        }
+
+        barraProgreso.setProgress(0);
+        lblPorcentaje.setText("0%");
+        lblEstado.setText("Procesando registros...");
+
+        btnIniciar.setDisable(true);
+        btnDetener.setDisable(false);
+        btnReiniciar.setDisable(true);
+
+        Runnable tarea = () -> {
+            try {
+                for (int i = 1; i <= 100; i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException();
+                    }
+
+                    Thread.sleep(100);
+
+                    final int avance = i;
+                    Platform.runLater(() -> {
+                        barraProgreso.setProgress(avance / 100.0);
+                        lblPorcentaje.setText(avance + "%");
+                    });
+                }
+
+                Platform.runLater(() -> {
+                    lblEstado.setText("Proceso finalizado");
+                    habilitarBotones();
+                });
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                Platform.runLater(() -> {
+                    lblEstado.setText("Proceso detenido");
+                    habilitarBotones();
+                });
+            }
+        };
+
+        hiloProceso = new Thread(tarea);
+        hiloProceso.setName("Hilo-Procesamiento");
+        hiloProceso.setDaemon(true);
+        hiloProceso.start();
     }
 
     @FXML
     private void detenerProceso() {
-        // Manejo de interrupción en Commit 5
+        // En Commit 5 se vincula la detención controlada con interrupt()
     }
 
     @FXML
     private void reiniciarProceso() {
-        // Manejo de reinicio en Commit 5
+        // En Commit 5 se vincula la lógica de reinicio completo
+    }
+
+    private void habilitarBotones() {
+        btnIniciar.setDisable(false);
+        btnDetener.setDisable(true);
+        btnReiniciar.setDisable(false);
     }
 
     public void detenerAlCerrar() {
-        // Cierre controlado de hilo en Commit 5
+        if (hiloProceso != null && hiloProceso.isAlive()) {
+            hiloProceso.interrupt();
+        }
     }
 }
