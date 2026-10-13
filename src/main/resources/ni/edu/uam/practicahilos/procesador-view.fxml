@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -15,138 +16,229 @@
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ni.edu.uam.practicahilos.ProcesadorController"
-      prefWidth="640" prefHeight="580"
+      prefWidth="680" prefHeight="650"
       spacing="0">
 
     <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         
-        <!-- PESTAÑA 1: PRÁCTICA GUIADA (PASOS 1 A 6) -->
+        <!-- ================= PESTAÑA 1: PRÁCTICA GUIADA ================= -->
         <Tab text="1. Práctica Guiada (Paso 1 - 6)">
             <ScrollPane fitToWidth="true">
-                <VBox alignment="CENTER" spacing="16">
+                <VBox alignment="TOP_CENTER" spacing="18">
                     <padding>
-                        <Insets top="20" right="25" bottom="20" left="25"/>
+                        <Insets top="20" right="25" bottom="25" left="25"/>
                     </padding>
 
-                    <Label text="Procesador de registros">
-                        <font>
-                            <Font size="22.0"/>
-                        </font>
-                    </Label>
+                    <!-- Tarjeta Principal: Procesador -->
+                    <TitledPane text="🚀 Procesador de Registros (Segundo Plano)" collapsible="false">
+                        <VBox alignment="CENTER" spacing="14">
+                            <padding>
+                                <Insets top="15" right="20" bottom="15" left="20"/>
+                            </padding>
 
-                    <Label text="Simula la carga y procesamiento de 100 registros en segundo plano (Thread + Runnable)"
-                           wrapText="true" textAlignment="CENTER"/>
+                            <Label text="Simulación de 100 registros con Thread, Runnable y Platform.runLater()"
+                                   wrapText="true" textAlignment="CENTER">
+                                <font>
+                                    <Font size="13.0"/>
+                                </font>
+                            </Label>
 
-                    <HBox alignment="CENTER" spacing="10">
-                        <Label text="Estado:"/>
-                        <Label fx:id="lblEstado" text="Esperando inicio"/>
-                    </HBox>
+                            <HBox alignment="CENTER" spacing="10">
+                                <Label text="Estado:">
+                                    <font>
+                                        <Font name="System Bold" size="13.0"/>
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblEstado" text="Esperando inicio">
+                                    <font>
+                                        <Font size="13.0"/>
+                                    </font>
+                                </Label>
+                            </HBox>
 
-                    <ProgressBar fx:id="barraProgreso" progress="0.0" prefWidth="440"/>
-                    <Label fx:id="lblPorcentaje" text="0%"/>
+                            <ProgressBar fx:id="barraProgreso" progress="0.0" prefWidth="500" prefHeight="26"/>
 
-                    <HBox alignment="CENTER" spacing="10">
-                        <Button fx:id="btnIniciar" text="Iniciar" onAction="#iniciarProceso"/>
-                        <Button fx:id="btnDetener" text="Detener" onAction="#detenerProceso" disable="true"/>
-                        <Button fx:id="btnReiniciar" text="Reiniciar" onAction="#reiniciarProceso"/>
-                    </HBox>
+                            <Label fx:id="lblPorcentaje" text="0%">
+                                <font>
+                                    <Font name="System Bold" size="24.0"/>
+                                </font>
+                            </Label>
 
-                    <Separator prefWidth="480"/>
+                            <HBox alignment="CENTER" spacing="14">
+                                <Button fx:id="btnIniciar" text="▶ Iniciar" onAction="#iniciarProceso"
+                                        prefWidth="130" prefHeight="34"/>
+                                <Button fx:id="btnDetener" text="⏸ Pausar" onAction="#detenerProceso" disable="true"
+                                        prefWidth="130" prefHeight="34"/>
+                                <Button fx:id="btnReiniciar" text="↺ Reiniciar" onAction="#reiniciarProceso"
+                                        prefWidth="130" prefHeight="34"/>
+                            </HBox>
 
-                    <Label text="Paso 6: Demostración de Bloqueo de Interfaz">
-                        <font>
-                            <Font size="14.0"/>
-                        </font>
-                    </Label>
-                    <Label text="Ejecuta Thread.sleep(5000) en el JavaFX Application Thread para contrastar el congelamiento de la UI:"
-                           wrapText="true" textAlignment="CENTER"/>
-                    <Button fx:id="btnBloqueante" text="Probar Proceso Bloqueante (5s)" onAction="#procesoBloqueante"/>
+                            <Label text="💡 Nota: Al pausar, el botón se convierte en '▶ Reanudar' para continuar desde el punto detenido."
+                                   wrapText="true" textAlignment="CENTER">
+                                <font>
+                                    <Font size="11.0"/>
+                                </font>
+                            </Label>
+                        </VBox>
+                    </TitledPane>
+
+                    <!-- Tarjeta Demostración: Proceso Bloqueante -->
+                    <TitledPane text="⚠️ Demostración de Bloqueo de Interfaz (Paso 6)" collapsible="false">
+                        <VBox alignment="CENTER" spacing="12">
+                            <padding>
+                                <Insets top="12" right="20" bottom="12" left="20"/>
+                            </padding>
+
+                            <Label text="Ejecuta Thread.sleep(5000) en el JavaFX Application Thread para contrastar el congelamiento de la ventana frente a la concurrencia multihilo:"
+                                   wrapText="true" textAlignment="CENTER">
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Label>
+
+                            <Button fx:id="btnBloqueante" text="⚠️ Probar Proceso Bloqueante (5s)" onAction="#procesoBloqueante"
+                                    prefWidth="260" prefHeight="34"/>
+
+                            <Label text="Observará que la ventana deja de responder a clics y redibujado durante los 5 segundos de bloqueo."
+                                   wrapText="true" textAlignment="CENTER">
+                                <font>
+                                    <Font size="11.0"/>
+                                </font>
+                            </Label>
+                        </VBox>
+                    </TitledPane>
+
                 </VBox>
             </ScrollPane>
         </Tab>
 
-        <!-- PESTAÑA 2: RETO FINAL (MONITOR CONCURRENTE EMPRESARIAL) -->
+        <!-- ================= PESTAÑA 2: RETO FINAL ================= -->
         <Tab text="2. Reto Final: Monitor Concurrente">
             <ScrollPane fitToWidth="true">
-                <VBox alignment="CENTER" spacing="14">
+                <VBox alignment="TOP_CENTER" spacing="16">
                     <padding>
-                        <Insets top="20" right="25" bottom="20" left="25"/>
+                        <Insets top="18" right="25" bottom="25" left="25"/>
                     </padding>
 
-                    <Label text="Monitor de Procesos Concurrentes">
+                    <Label text="NicaData Solutions S.A. | Monitor de Procesos Concurrentes">
                         <font>
-                            <Font size="20.0"/>
+                            <Font name="System Bold" size="16.0"/>
                         </font>
                     </Label>
-                    <Label text="NicaData Solutions S.A. - Procesamiento simultáneo con dos hilos Thread independientes"
-                           wrapText="true" textAlignment="CENTER"/>
+                    <Label text="Ejecución simultánea e independiente con hilos Thread, pausas y reanudaciones individuales."
+                           wrapText="true" textAlignment="CENTER">
+                        <font>
+                            <Font size="12.0"/>
+                        </font>
+                    </Label>
 
-                    <Separator prefWidth="540"/>
+                    <!-- Tarjeta Clientes -->
+                    <TitledPane text="👥 Proceso 1: Registros de Clientes (100 registros | 80 ms/reg)" collapsible="false">
+                        <VBox alignment="CENTER" spacing="10">
+                            <padding>
+                                <Insets top="12" right="15" bottom="12" left="15"/>
+                            </padding>
 
-                    <!-- PROCESO 1: CLIENTES -->
-                    <VBox alignment="CENTER" spacing="8">
-                        <Label text="Proceso 1: Registros de Clientes (100 registros - 80 ms/reg)">
-                            <font>
-                                <Font size="14.0"/>
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER" spacing="8">
-                            <Label text="Estado:"/>
-                            <Label fx:id="lblEstadoClientes" text="Esperando inicio"/>
-                        </HBox>
-                        <ProgressBar fx:id="barraProgresoClientes" progress="0.0" prefWidth="440"/>
-                        <HBox alignment="CENTER" spacing="16">
-                            <Label fx:id="lblPorcentajeClientes" text="0%"/>
-                            <Label fx:id="lblDetalleClientes" text="0 / 100 procesados"/>
-                        </HBox>
-                        <HBox alignment="CENTER" spacing="10">
-                            <Button fx:id="btnIniciarClientes" text="Iniciar Clientes" onAction="#iniciarProcesoClientes"/>
-                            <Button fx:id="btnDetenerClientes" text="Detener Clientes" onAction="#detenerProcesoClientes" disable="true"/>
-                            <Button fx:id="btnReiniciarClientes" text="Reiniciar Clientes" onAction="#reiniciarProcesoClientes"/>
-                        </HBox>
-                    </VBox>
+                            <HBox alignment="CENTER" spacing="8">
+                                <Label text="Estado:">
+                                    <font>
+                                        <Font name="System Bold" size="12.0"/>
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblEstadoClientes" text="Esperando inicio"/>
+                            </HBox>
 
-                    <Separator prefWidth="540"/>
+                            <ProgressBar fx:id="barraProgresoClientes" progress="0.0" prefWidth="500" prefHeight="24"/>
 
-                    <!-- PROCESO 2: PRODUCTOS -->
-                    <VBox alignment="CENTER" spacing="8">
-                        <Label text="Proceso 2: Registros de Productos (50 registros - 150 ms/reg)">
-                            <font>
-                                <Font size="14.0"/>
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER" spacing="8">
-                            <Label text="Estado:"/>
-                            <Label fx:id="lblEstadoProductos" text="Esperando inicio"/>
-                        </HBox>
-                        <ProgressBar fx:id="barraProgresoProductos" progress="0.0" prefWidth="440"/>
-                        <HBox alignment="CENTER" spacing="16">
-                            <Label fx:id="lblPorcentajeProductos" text="0%"/>
-                            <Label fx:id="lblDetalleProductos" text="0 / 50 procesados"/>
-                        </HBox>
-                        <HBox alignment="CENTER" spacing="10">
-                            <Button fx:id="btnIniciarProductos" text="Iniciar Productos" onAction="#iniciarProcesoProductos"/>
-                            <Button fx:id="btnDetenerProductos" text="Detener Productos" onAction="#detenerProcesoProductos" disable="true"/>
-                            <Button fx:id="btnReiniciarProductos" text="Reiniciar Productos" onAction="#reiniciarProcesoProductos"/>
-                        </HBox>
-                    </VBox>
+                            <HBox alignment="CENTER" spacing="20">
+                                <Label fx:id="lblPorcentajeClientes" text="0%">
+                                    <font>
+                                        <Font name="System Bold" size="20.0"/>
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblDetalleClientes" text="0 / 100 procesados">
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Label>
+                            </HBox>
 
-                    <Separator prefWidth="540"/>
+                            <HBox alignment="CENTER" spacing="12">
+                                <Button fx:id="btnIniciarClientes" text="▶ Iniciar Clientes" onAction="#iniciarProcesoClientes"
+                                        prefWidth="150" prefHeight="32"/>
+                                <Button fx:id="btnDetenerClientes" text="⏸ Pausar Clientes" onAction="#detenerProcesoClientes" disable="true"
+                                        prefWidth="160" prefHeight="32"/>
+                                <Button fx:id="btnReiniciarClientes" text="↺ Reiniciar Clientes" onAction="#reiniciarProcesoClientes"
+                                        prefWidth="150" prefHeight="32"/>
+                            </HBox>
+                        </VBox>
+                    </TitledPane>
 
-                    <!-- CONTROL MAESTRO SIMULTÁNEO -->
-                    <VBox alignment="CENTER" spacing="8">
-                        <Label text="Control Maestro Simultáneo">
-                            <font>
-                                <Font size="13.0"/>
-                            </font>
-                        </Label>
-                        <HBox alignment="CENTER" spacing="10">
-                            <Button fx:id="btnIniciarAmbos" text="Iniciar Ambos" onAction="#iniciarAmbosProcesos"/>
-                            <Button fx:id="btnDetenerAmbos" text="Detener Ambos" onAction="#detenerAmbosProcesos"/>
-                            <Button fx:id="btnReiniciarAmbos" text="Reiniciar Ambos" onAction="#reiniciarAmbosProcesos"/>
-                        </HBox>
-                        <Label fx:id="lblResumenGeneral" text="Listo para iniciar tareas concurrentes"/>
-                    </VBox>
+                    <!-- Tarjeta Productos -->
+                    <TitledPane text="📦 Proceso 2: Registros de Productos (50 registros | 150 ms/reg)" collapsible="false">
+                        <VBox alignment="CENTER" spacing="10">
+                            <padding>
+                                <Insets top="12" right="15" bottom="12" left="15"/>
+                            </padding>
+
+                            <HBox alignment="CENTER" spacing="8">
+                                <Label text="Estado:">
+                                    <font>
+                                        <Font name="System Bold" size="12.0"/>
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblEstadoProductos" text="Esperando inicio"/>
+                            </HBox>
+
+                            <ProgressBar fx:id="barraProgresoProductos" progress="0.0" prefWidth="500" prefHeight="24"/>
+
+                            <HBox alignment="CENTER" spacing="20">
+                                <Label fx:id="lblPorcentajeProductos" text="0%">
+                                    <font>
+                                        <Font name="System Bold" size="20.0"/>
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblDetalleProductos" text="0 / 50 procesados">
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Label>
+                            </HBox>
+
+                            <HBox alignment="CENTER" spacing="12">
+                                <Button fx:id="btnIniciarProductos" text="▶ Iniciar Productos" onAction="#iniciarProcesoProductos"
+                                        prefWidth="150" prefHeight="32"/>
+                                <Button fx:id="btnDetenerProductos" text="⏸ Pausar Productos" onAction="#detenerProcesoProductos" disable="true"
+                                        prefWidth="160" prefHeight="32"/>
+                                <Button fx:id="btnReiniciarProductos" text="↺ Reiniciar Productos" onAction="#reiniciarProcesoProductos"
+                                        prefWidth="150" prefHeight="32"/>
+                            </HBox>
+                        </VBox>
+                    </TitledPane>
+
+                    <!-- Tarjeta Control Simultáneo -->
+                    <TitledPane text="⚡ Panel de Control Maestro Simultáneo" collapsible="false">
+                        <VBox alignment="CENTER" spacing="10">
+                            <padding>
+                                <Insets top="10" right="15" bottom="10" left="15"/>
+                            </padding>
+
+                            <HBox alignment="CENTER" spacing="14">
+                                <Button fx:id="btnIniciarAmbos" text="▶ Iniciar / Reanudar Ambos" onAction="#iniciarAmbosProcesos"
+                                        prefWidth="180" prefHeight="32"/>
+                                <Button fx:id="btnDetenerAmbos" text="⏸ Pausar Ambos" onAction="#detenerAmbosProcesos"
+                                        prefWidth="140" prefHeight="32"/>
+                                <Button fx:id="btnReiniciarAmbos" text="↺ Reiniciar Ambos" onAction="#reiniciarAmbosProcesos"
+                                        prefWidth="140" prefHeight="32"/>
+                            </HBox>
+
+                            <Label fx:id="lblResumenGeneral" text="Listo para iniciar tareas concurrentes">
+                                <font>
+                                    <Font name="System Bold" size="12.0"/>
+                                </font>
+                            </Label>
+                        </VBox>
+                    </TitledPane>
 
                 </VBox>
             </ScrollPane>
