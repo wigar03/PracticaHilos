@@ -26,6 +26,9 @@ public class ProcesadorController {
     @FXML
     private Button btnReiniciar;
 
+    @FXML
+    private Button btnBloqueante;
+
     private Thread hiloProceso;
 
     @FXML
@@ -97,6 +100,17 @@ public class ProcesadorController {
         lblPorcentaje.setText("0%");
         lblEstado.setText("Esperando inicio");
         habilitarBotones();
+    }
+
+    @FXML
+    private void procesoBloqueante() {
+        lblEstado.setText("Procesando en hilo principal (bloqueo)...");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        lblEstado.setText("Finalizado (hilo principal desbloqueado)");
     }
 
     private void habilitarBotones() {
