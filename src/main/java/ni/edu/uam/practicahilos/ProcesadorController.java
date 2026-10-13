@@ -183,57 +183,220 @@ public class ProcesadorController {
     }
 
     // ==========================================
-    // STUBS RETO FINAL (Implementación en Commit 8)
+    // RETO FINAL: CONCURRENCIA CLIENTES Y PRODUCTOS
     // ==========================================
 
     @FXML
     private void iniciarProcesoClientes() {
-        // Implementación en Commit 8
+        if (hiloClientes != null && hiloClientes.isAlive()) {
+            return;
+        }
+
+        barraProgresoClientes.setProgress(0);
+        lblPorcentajeClientes.setText("0%");
+        lblDetalleClientes.setText("0 / 100 procesados");
+        lblEstadoClientes.setText("Procesando clientes...");
+
+        btnIniciarClientes.setDisable(true);
+        btnDetenerClientes.setDisable(false);
+        btnReiniciarClientes.setDisable(true);
+        actualizarEstadoResumen();
+
+        Runnable tareaClientes = () -> {
+            try {
+                for (int i = 1; i <= 100; i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException();
+                    }
+
+                    // 80 ms por registro simulando proceso de clientes
+                    Thread.sleep(80);
+
+                    final int avance = i;
+                    Platform.runLater(() -> {
+                        barraProgresoClientes.setProgress(avance / 100.0);
+                        lblPorcentajeClientes.setText(avance + "%");
+                        lblDetalleClientes.setText(avance + " / 100 procesados");
+                    });
+                }
+
+                Platform.runLater(() -> {
+                    lblEstadoClientes.setText("Clientes completados");
+                    btnIniciarClientes.setDisable(false);
+                    btnDetenerClientes.setDisable(true);
+                    btnReiniciarClientes.setDisable(false);
+                    actualizarEstadoResumen();
+                });
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                Platform.runLater(() -> {
+                    lblEstadoClientes.setText("Proceso detenido");
+                    btnIniciarClientes.setDisable(false);
+                    btnDetenerClientes.setDisable(true);
+                    btnReiniciarClientes.setDisable(false);
+                    actualizarEstadoResumen();
+                });
+            }
+        };
+
+        hiloClientes = new Thread(tareaClientes, "Hilo-Clientes");
+        hiloClientes.setDaemon(true);
+        hiloClientes.start();
     }
 
     @FXML
     private void detenerProcesoClientes() {
-        // Implementación en Commit 8
+        if (hiloClientes != null && hiloClientes.isAlive()) {
+            btnDetenerClientes.setDisable(true);
+            lblEstadoClientes.setText("Solicitando detención...");
+            hiloClientes.interrupt();
+        }
     }
 
     @FXML
     private void reiniciarProcesoClientes() {
-        // Implementación en Commit 8
+        if (hiloClientes != null && hiloClientes.isAlive()) {
+            return;
+        }
+
+        barraProgresoClientes.setProgress(0);
+        lblPorcentajeClientes.setText("0%");
+        lblDetalleClientes.setText("0 / 100 procesados");
+        lblEstadoClientes.setText("Esperando inicio");
+        btnIniciarClientes.setDisable(false);
+        btnDetenerClientes.setDisable(true);
+        btnReiniciarClientes.setDisable(false);
+        actualizarEstadoResumen();
     }
 
     @FXML
     private void iniciarProcesoProductos() {
-        // Implementación en Commit 8
+        if (hiloProductos != null && hiloProductos.isAlive()) {
+            return;
+        }
+
+        barraProgresoProductos.setProgress(0);
+        lblPorcentajeProductos.setText("0%");
+        lblDetalleProductos.setText("0 / 50 procesados");
+        lblEstadoProductos.setText("Procesando productos...");
+
+        btnIniciarProductos.setDisable(true);
+        btnDetenerProductos.setDisable(false);
+        btnReiniciarProductos.setDisable(true);
+        actualizarEstadoResumen();
+
+        Runnable tareaProductos = () -> {
+            try {
+                for (int i = 1; i <= 50; i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException();
+                    }
+
+                    // 150 ms por producto (ritmo diferente a clientes)
+                    Thread.sleep(150);
+
+                    final int avance = i;
+                    final int porcentaje = (avance * 100) / 50;
+                    Platform.runLater(() -> {
+                        barraProgresoProductos.setProgress(avance / 50.0);
+                        lblPorcentajeProductos.setText(porcentaje + "%");
+                        lblDetalleProductos.setText(avance + " / 50 procesados");
+                    });
+                }
+
+                Platform.runLater(() -> {
+                    lblEstadoProductos.setText("Productos completados");
+                    btnIniciarProductos.setDisable(false);
+                    btnDetenerProductos.setDisable(true);
+                    btnReiniciarProductos.setDisable(false);
+                    actualizarEstadoResumen();
+                });
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                Platform.runLater(() -> {
+                    lblEstadoProductos.setText("Proceso detenido");
+                    btnIniciarProductos.setDisable(false);
+                    btnDetenerProductos.setDisable(true);
+                    btnReiniciarProductos.setDisable(false);
+                    actualizarEstadoResumen();
+                });
+            }
+        };
+
+        hiloProductos = new Thread(tareaProductos, "Hilo-Productos");
+        hiloProductos.setDaemon(true);
+        hiloProductos.start();
     }
 
     @FXML
     private void detenerProcesoProductos() {
-        // Implementación en Commit 8
+        if (hiloProductos != null && hiloProductos.isAlive()) {
+            btnDetenerProductos.setDisable(true);
+            lblEstadoProductos.setText("Solicitando detención...");
+            hiloProductos.interrupt();
+        }
     }
 
     @FXML
     private void reiniciarProcesoProductos() {
-        // Implementación en Commit 8
+        if (hiloProductos != null && hiloProductos.isAlive()) {
+            return;
+        }
+
+        barraProgresoProductos.setProgress(0);
+        lblPorcentajeProductos.setText("0%");
+        lblDetalleProductos.setText("0 / 50 procesados");
+        lblEstadoProductos.setText("Esperando inicio");
+        btnIniciarProductos.setDisable(false);
+        btnDetenerProductos.setDisable(true);
+        btnReiniciarProductos.setDisable(false);
+        actualizarEstadoResumen();
     }
 
     @FXML
     private void iniciarAmbosProcesos() {
-        // Implementación en Commit 8
+        iniciarProcesoClientes();
+        iniciarProcesoProductos();
     }
 
     @FXML
     private void detenerAmbosProcesos() {
-        // Implementación en Commit 8
+        detenerProcesoClientes();
+        detenerProcesoProductos();
     }
 
     @FXML
     private void reiniciarAmbosProcesos() {
-        // Implementación en Commit 8
+        reiniciarProcesoClientes();
+        reiniciarProcesoProductos();
+    }
+
+    private void actualizarEstadoResumen() {
+        boolean clientesActivo = hiloClientes != null && hiloClientes.isAlive();
+        boolean productosActivo = hiloProductos != null && hiloProductos.isAlive();
+
+        if (clientesActivo && productosActivo) {
+            lblResumenGeneral.setText("Ejecutando concurrentemente: Clientes y Productos");
+        } else if (clientesActivo) {
+            lblResumenGeneral.setText("Ejecutando: Clientes | Productos inactivo");
+        } else if (productosActivo) {
+            lblResumenGeneral.setText("Ejecutando: Productos | Clientes inactivo");
+        } else {
+            lblResumenGeneral.setText("Procesos detenidos o listos para iniciar");
+        }
     }
 
     public void detenerAlCerrar() {
         if (hiloProceso != null && hiloProceso.isAlive()) {
             hiloProceso.interrupt();
+        }
+        if (hiloClientes != null && hiloClientes.isAlive()) {
+            hiloClientes.interrupt();
+        }
+        if (hiloProductos != null && hiloProductos.isAlive()) {
+            hiloProductos.interrupt();
         }
     }
 }
